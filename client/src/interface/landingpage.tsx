@@ -5,11 +5,13 @@ export default function LandingPage() {
 
     return (
         <>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#F0D8FF] to-[#FFE6DC] z-0" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#F0D8FF] to-[#FFE6DC] z-0 bg-landing opacity-30" />
             <div className=" absolute inset-0 z-10">
-                <nav className="flex justify-between items-center mt-2 py-2 px-30">
-                    <div className="text-3xl font-brand">
-                        CodeFlow.AI
+                <nav className="flex justify-between items-center mt-6 py-2 px-40">
+
+                    <div className="flex items-center gap-2">
+                        <img src="/CodeFlowLogo.svg" className="w-8" />
+                        <h1 className="text-3xl font-brand pt-1.5">CodeFlow.AI</h1>
                     </div>
 
                     <div className="flex gap-4 ">
@@ -22,13 +24,23 @@ export default function LandingPage() {
                         </button>
                     </div>
                 </nav>
-                <div className="px-30 mt-26 flex flex-col gap-8 items-center justify-center">
-                    <h1 className="font-body font-semibold text-5xl w-140 text-center">
-                        Learn by Solving, Not Just Watching.
-                    </h1>
-                    <p className="font-body text-lg w-160 text-center">
-                        Our app turns educational videos into instant problem sets, helping students actively practice instead of just passively watching.
-                    </p>
+                <div className="px-40 mt-20 flex gap-2">
+                    <div className="flex-1 flex flex-col gap-6">
+                        <h1 className="font-hero text-6xl">
+                            Learn by solving, not just watching
+                        </h1>
+                        <p className="font-body text-lg">
+                            Turn videos into problem sets and start learning
+                        </p>
+                        <button className="self-start hover:rounded-xl hover:opacity-70 transition-all cursor-pointer bg-black text-white px-4 py-2 rounded-lg">
+                            Get Started
+                        </button>
+                    </div>
+
+                    <div className="flex-2">
+
+                    </div>
+
                 </div>
             </div>
         </>
