@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  quizCompleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const User = mongoose.model('User', userSchema);
