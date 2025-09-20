@@ -1,6 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
 import axios from "axios";
+import QuizForm from "../components/QuizForm";
 
 export default function Quizzes() {
     const { user, logout } = useAuth0();
@@ -25,9 +26,11 @@ export default function Quizzes() {
 
     return (
         <>
-            Quizzes
-            {user?.email}
-            <button className="bg-black text-white px-4 py-2 hover:opacity-85 rounded-lg cursor-pointer" onClick={() => logout()}>Logout</button>
+            <div className="flex items-center justify-between px-4 py-3">
+                <div className="text-sm text-zinc-600">{user?.email}</div>
+                <button className="bg-black text-white px-4 py-2 hover:opacity-85 rounded-lg cursor-pointer" onClick={() => logout()}>Logout</button>
+            </div>
+            <QuizForm />
         </>
     )
 }
