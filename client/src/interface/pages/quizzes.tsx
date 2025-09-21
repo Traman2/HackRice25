@@ -35,6 +35,7 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { useTimeout } from "@/lib/utils";
 
 export const userQuizFormSchema = z.object({
     programmingExperienceLevel: z.enum([
@@ -154,6 +155,7 @@ export default function Quizzes() {
     const [formProgress, setFormProgress] = useState(0);
     const totalSections = formSections.length;
     const navigate = useNavigate();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<z.infer<typeof userQuizFormSchema>>({
         resolver: zodResolver(userQuizFormSchema),
@@ -188,10 +190,25 @@ export default function Quizzes() {
             .catch((error) => {
                 console.log("error: ", error)
             })
-        //Redirect to dashboard after gemini creates the custom tutorial paths hree
+
+        axios
+            .patch(`http://localhost:3000/api/users/${user?.sub}`, 
+                {
+                    quizCompleted: true
+                }
+            )
+            .then(() => {
+                console.log("success");
+                setIsSubmitting(true);
+            })
 
     }
 
+    useTimeout(() => {
+        if (isSubmitting) {
+            navigate("/dashboard");
+        }
+    }, isSubmitting ? 4000 : null);
 
     useEffect(() => {
         const sendUserData = async () => {
@@ -745,7 +762,9 @@ export default function Quizzes() {
                                                 <Button type="button" onClick={() => setFormProgress(prev => prev + 1)} className="cursor-pointer px-6 py-2 rounded-md bg-black text-white hover:bg-gray-800 transition-all duration-200">Next</Button>
                                             )}
                                             {formProgress === totalSections - 1 && (
-                                                <Button type="submit" className="px-6 py-2 cursor-pointer rounded-md bg-green-600 text-white hover:bg-green-700 transition-all duration-200">Submit</Button>
+                                                <Button type="submit" className="px-6 py-2 cursor-pointer rounded-md bg-green-600 text-white hover:bg-green-700 transition-all duration-200" disabled={isSubmitting}>
+                                                    {isSubmitting ? "Submitting..." : "Submit"}
+                                                </Button>
                                             )}
                                         </div>
                                     </div>
