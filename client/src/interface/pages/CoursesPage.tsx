@@ -119,7 +119,7 @@ export default function CoursesPage() {
                                         <source src={fileName === "1LearnPython.mp4" ? "/1LearnPython.mp4" : `http://localhost:3000/api/videos/${fileName}`} type="video/mp4"/>
                                         Your browser does not support the video tag.
                                     </video>
-                                    <button className="self-start mt-2 hover:rounded-xl hover:bg-gray-200 transition-all cursor-pointer border-2 border-black/50 px-4 py-2 rounded-lg" onClick={(e) => e.stopPropagation()}>Watch Now</button>
+                                    <button className="self-start mt-2 hover:rounded-xl hover:bg-gray-200 transition-all cursor-pointer border-2 border-black/50 px-4 py-2 rounded-lg" onClick={(e) => { e.stopPropagation(); navigate('/video'); }}>Watch Now</button>
                                 </div>
                             )}
                         </div>
