@@ -1,44 +1,43 @@
 from twelvelabs import TwelveLabs
+from google import genai
+from google.genai import types
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client = TwelveLabs(api_key=os.getenv("TWELVE_API_KEY"))
+#  TwelveLabs
+tl_client = TwelveLabs(api_key=os.getenv("TWELVE_API_KEY"))
 
-# Your existing video ID
-video_id = "68cee9925705aa6223345a1e"
+# Gemini
+client = genai.Client()
+# genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-# Generate a summary
-res_summary = client.summarize(
-    video_id=video_id,
-    type="summary",
-    # Optional: you can customize the prompt or temperature
-    # prompt="Summarize this video for a Python beginner",
-    # temperature=0.2
-)
+# all the video ids in order
+video_ids = ["68ceee675705aa6223346702", "68ceee7bc81f4a8a930376f7","68cf167bc81f4a8a9303b56a" ,"68cf167be23608ddb86eb554" ,"68cf167b4fc8dabea320ee22" , "68cf167a5705aa622334a5e2"]
 
-print(f"Video Summary:\n{res_summary.summary}")
+# beginner, intermediate, inheritance, optional parameters, static , lambda
 
-# Optional: generate chapters
-res_chapters = client.summarize(
-    video_id=video_id,
-    type="chapter"
-)
-print("\nChapters:")
-for chapter in res_chapters.chapters:
-    print(
-        f"Chapter {chapter.chapter_number}, "
-        f"start={chapter.start_sec}, end={chapter.end_sec}\n"
-        f"Title: {chapter.chapter_title}\n"
-        f"Summary: {chapter.chapter_summary}\n"
+#loop through and summarize each video
+for video_id in video_ids:
+    # 3️⃣ Get the summary from TwelveLabs
+    res_summary = tl_client.summarize(video_id=video_id, type="summary")
+    tl_summary_text = res_summary.summary
+    #print("Original TwelveLabs Summary:\n", tl_summary_text, "\n")
+
+    # 4️⃣ Use Gemini to generate a concise summary
+    gemini_response = client.models.generate_content(
+        model="gemini-2.5-flash",  # or the latest Gemini model
+        config=types.GenerateContentConfig(
+            temperature=0.7,
+        ),
+        contents=f"Given a text summary, summarize the following text concisely and make sure not a lot of context is lost.:\n\n{tl_summary_text}",
+        
     )
 
-# Optional: generate highlights
-res_highlights = client.summarize(
-    video_id=video_id,
-    type="highlight"
-)
-print("\nHighlights:")
-for highlight in res_highlights.highlights:
-    print(f"Highlight: {highlight.highlight}, start: {highlight.start_sec}, end: {highlight.end_sec}")
+    concise_summary = gemini_response.text
+    print("Concise Summary via Gemini:\n", concise_summary)
+
+
+
+

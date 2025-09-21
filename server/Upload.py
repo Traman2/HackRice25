@@ -36,7 +36,7 @@ if task.status != "ready":
 print(
     f"Upload complete. The unique identifier of your video is {task.video_id}.")
 
-#68ceee675705aa6223346702
+#beginner --> 68ceee675705aa6223346702
 
 
 # intermediate : 68ceee7bc81f4a8a930376f7
