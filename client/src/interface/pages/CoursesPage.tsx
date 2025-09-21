@@ -97,7 +97,7 @@ export default function CoursesPage() {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </nav>
-            <div className="px-32 h-100 py-14 bg-gray-200 rounded-b-2xl shadow-lg">
+            <div className="px-32 min-h-100 py-14 bg-gray-200 rounded-b-2xl shadow-lg">
                 <div className="flex flex-col gap-6">
                     <h1 className="font-body font-semibold text-5xl w-140">{dashboardData?.title}</h1>
                     <p className="font-body text-lg  w-170">{dashboardData?.description}</p>
@@ -119,7 +119,7 @@ export default function CoursesPage() {
                                         <source src={fileName === "1LearnPython.mp4" ? "/1LearnPython.mp4" : `http://localhost:3000/api/videos/${fileName}`} type="video/mp4"/>
                                         Your browser does not support the video tag.
                                     </video>
-                                    <button className="self-start mt-2 hover:rounded-xl hover:bg-gray-200 transition-all cursor-pointer border-2 border-black/50 px-4 py-2 rounded-lg" onClick={(e) => e.stopPropagation()}>Watch Now</button>
+                                    <button className="self-start mt-2 hover:rounded-xl hover:bg-gray-200 transition-all cursor-pointer border-2 border-black/50 px-4 py-2 rounded-lg" onClick={(e) => {e.stopPropagation(); navigate(`/video/${fileName}`)}}>Watch Now</button>
                                 </div>
                             )}
                         </div>

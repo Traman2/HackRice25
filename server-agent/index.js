@@ -5,6 +5,7 @@ import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
 import userQuizFormRoutes from './routes/userQuizFormRoutes.js';
 import videoCDNRoutes from './routes/videoCDNRoutes.js'
+import twelveLabsRoutes from './routes/twelveLabsRoutes.js';
 import { initializeVideoStream } from './controllers/videoStreamController.js';
 
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,7 @@ app.use(cors());
 app.use('/api/users', userRoutes);
 app.use('/api/quiz', userQuizFormRoutes);
 app.use('/api/videos', videoCDNRoutes);
+app.use('/api/twelvelabs', twelveLabsRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello from HackRice25 server!');

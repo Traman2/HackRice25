@@ -14,7 +14,6 @@ const userSkill = new mongoose.Schema({
   targetSkill: {
     type: String,
     required: true,
-    unique: true,
   },
 });
 

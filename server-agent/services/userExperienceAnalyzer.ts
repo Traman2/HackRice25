@@ -50,6 +50,7 @@ export default async function classifyAndSave(userUID: string) {
       { new: true, upsert: true }
     );
 
+    console.log(updatedUserLevel)
     return updatedUserLevel;
   } catch (err) {
     console.error("Error in classifyAndSave:", err);

@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import UserQuizForm from "../models/UserQuizForm.js";
 import UserSkill from "../models/UserSkill.js";
 
-// Use to populate the data
 import AgenticDashboardData from "../models/AgenticDashboardData.js";
 import mongoose from "mongoose";
 

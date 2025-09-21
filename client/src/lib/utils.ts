@@ -27,3 +27,9 @@ export function useTimeout(callback: () => void, delay: number | null) {
     return () => clearTimeout(id)
   }, [delay])
 }
+
+export function formatSecondsToMinutesAndSeconds(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}m ${seconds}s`;
+}

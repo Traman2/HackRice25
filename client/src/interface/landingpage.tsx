@@ -24,7 +24,7 @@ export default function LandingPage() {
                         </button>
                     </div>
                 </nav>
-                <div className="px-40 mt-20 flex gap-2">
+                <div className="px-40 mt-44 flex gap-2">
                     <div className="flex-1 flex flex-col gap-6">
                         <h1 className="font-hero text-6xl">
                             Learn by solving, not just watching

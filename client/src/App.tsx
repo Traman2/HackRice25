@@ -11,7 +11,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} /> {/* First */}
           <Route path="/quizzes" element={<Quizzes/>}/> {/* Second */}
-          <Route path="/video" element={<VideoWithAgent/>}/> {/* Fourth */}
+          <Route path="/video/:filename" element={<VideoWithAgent/>}/> {/* Fourth */}
           <Route path="/dashboard" element={<CoursesPage/>}/> {/* Third */}
         </Routes>
       </Router>
