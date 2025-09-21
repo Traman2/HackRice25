@@ -1,13 +1,29 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import axios from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { formatSecondsToMinutesAndSeconds } from "../../lib/utils";
 
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu"
+
+import {
+    IconSettings,
+    IconLogout,
+    IconHome,
+} from "@tabler/icons-react"
+
 export default function VideoWithAgent() {
     const { user, logout } = useAuth0();
     const { filename } = useParams<{ filename: string }>();
+    const navigate = useNavigate();
     const videoRef = useRef<HTMLVideoElement>(null);
     const [chatInput, setChatInput] = useState<string>('');
     const [chatHistory, setChatHistory] = useState<Array<{ type: 'user' | 'bot'; content: string | React.ReactNode }>>([]);
@@ -15,7 +31,6 @@ export default function VideoWithAgent() {
     // Challenge state
     const [currentChallenge, setCurrentChallenge] = useState<any>(null);
     const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
-    const [isVideoPaused, setIsVideoPaused] = useState(false);
     const [triggeredChallenges, setTriggeredChallenges] = useState<Set<number>>(new Set());
     const [tutorial, setTutorial] = useState<any>(null);
 
@@ -41,7 +56,6 @@ export default function VideoWithAgent() {
         if (challengeEvent && !currentChallenge) {
             console.log('🎯 PAUSING VIDEO FOR CHALLENGE:', challengeEvent.data.title);
             setCurrentChallenge(challengeEvent.data);
-            setIsVideoPaused(true);
             setTriggeredChallenges(prev => new Set(prev).add(challengeEvent.timestamp));
             if (videoRef.current) {
                 videoRef.current.pause();
@@ -51,7 +65,6 @@ export default function VideoWithAgent() {
 
     const resumeVideo = () => {
         setCurrentChallenge(null);
-        setIsVideoPaused(false);
         if (videoRef.current) {
             videoRef.current.play();
         }
@@ -148,156 +161,261 @@ export default function VideoWithAgent() {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-gray-100 py-4 px-8">
-            <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-2">
-                    <img src="/CodeFlowLogo.svg" className="w-8" />
-                    <h1 className="text-3xl font-brand pt-1.5">CodeFlow.AI</h1>
-                </div>
-                <div className="flex items-center space-x-4">
-                    <span className="text-lg">Welcome, {user?.email}</span>
-                    <button onClick={() => logout()} className="bg-black text-white px-4 py-2 hover:opacity-85 rounded-lg cursor-pointer">
-                        Logout
-                    </button>
-                </div>
-            </div>
-
-            <div className="flex-grow flex space-x-4">
-                {/* Video Frame */}
-                <div className="w-3/4 bg-white rounded-md flex flex-col items-center shadow-lg p-4">
-                    <video ref={videoRef} className="w-full rounded-md" controls onTimeUpdate={(e) => {
-                        const currentTime = (e.target as HTMLVideoElement).currentTime;
-                        const t = Math.floor(currentTime);
-                        axios.post('http://localhost:3002/sync', { currentTime: t }).catch(() => { });
-                        checkForChallenge(currentTime); // Use precise time for challenge detection
-                    }}>
-                        <source src={filename === "1LearnPython.mp4" ? "/1LearnPython.mp4" : `http://localhost:3000/api/videos/${filename}`} type="video/mp4" className="rounded-md" />
-                        Your browser does not support the video tag.
-                    </video>
-                    <div className="mt-3 flex gap-2">
-                        <button className="border px-3 py-1 rounded" onClick={async()=>{
-                            if (!tutorial) return;
-                            const setup = tutorial.events.find((e:any)=>e.type==='project_setup')?.data || { working_directory: '~/learn_python_5', ide: 'vscode' };
-                            await axios.post('http://localhost:3002/init-project', setup).catch(()=>{});
-                            await axios.post('http://localhost:3002/events/load', { events: tutorial.events }).catch(()=>{});
-                        }}>Start Bridge</button>
-                        <button className="border px-3 py-1 rounded" onClick={()=>{
-                            if (videoRef.current) videoRef.current.currentTime = 0;
-                            axios.post('http://localhost:3002/seek', { time: 0 }).catch(()=>{});
-                            setTriggeredChallenges(new Set()); // Clear triggered challenges on reset
-                            setCurrentChallenge(null); // Clear any active challenge
-                        }}>Reset</button>
-                    </div>
-                    {/* Challenge Overlay */}
-                    {currentChallenge && (
-                        <div className="mt-4 p-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-xl font-bold text-yellow-800">🎯 Challenge Time!</h3>
-                                <button 
-                                    onClick={resumeVideo}
-                                    className="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+        <div className="min-h-screen bg-white">
+            {/* Clean Header */}
+            <header className="border-b border-gray-200">
+                <div className="max-w-7xl mx-auto px-6 py-4">
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                            <img src="/CodeFlowLogo.svg" className="w-7" />
+                            <h1 className="text-2xl font-brand pt-1.5">CodeFlow.AI</h1>
+                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <div className="flex items-center gap-2 hover:rounded-xl bg-blue-300 hover:bg-blue-200 transition-all cursor-pointer px-4 py-1 rounded-lg">
+                                    {user?.given_name?.charAt(0)}{user?.family_name?.charAt(0)}
+                                </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                className="w-56 rounded-lg bg-white border shadow-lg"
+                                align="end"
+                                side="bottom"
+                                sideOffset={8}
+                            >
+                                <DropdownMenuLabel className="text-sm font-medium px-3 pt-2">
+                                    {user?.given_name} {user?.family_name}
+                                    <p className="text-xs text-gray-500 mt-1">{user?.email}</p>
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => navigate("/dashboard")} className="px-3 py-2 cursor-pointer hover:bg-gray-100">
+                                    <IconHome />
+                                    Home
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="px-3 py-2 cursor-pointer hover:bg-gray-100">
+                                    <IconSettings />
+                                    Settings
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    onClick={() => logout()}
+                                    className="px-3 py-2 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    variant="destructive"
                                 >
-                                    Skip Challenge
-                                </button>
-                            </div>
-                            
-                            <div className="mb-4">
-                                <h4 className="font-semibold text-lg mb-2">{currentChallenge.title}</h4>
-                                <p className="text-gray-700 mb-3">{currentChallenge.description}</p>
-                                <p className="text-sm text-blue-600 mb-4">
-                                    <strong>Concept learned:</strong> {currentChallenge.concept_learned}
-                                </p>
-                            </div>
+                                    <IconLogout />
+                                    Logout
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                </div>
+            </header>
 
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Choose Difficulty:</label>
-                                <div className="flex gap-2 mb-3">
-                                    {['easy', 'medium', 'hard'].map((level) => (
-                                        <button
-                                            key={level}
-                                            onClick={() => setSelectedDifficulty(level as any)}
-                                            className={`px-4 py-2 rounded capitalize ${
-                                                selectedDifficulty === level 
-                                                ? 'bg-blue-600 text-white' 
-                                                : 'bg-gray-200 hover:bg-gray-300'
-                                            }`}
-                                        >
-                                            {level}
-                                        </button>
-                                    ))}
+            {/* Main Content */}
+            <div className="max-w-7xl mx-auto p-6">
+                <div className="grid grid-cols-12 gap-8 h-[calc(100vh-140px)]">
+                    {/* Video Section */}
+                    <div className="col-span-8 space-y-4">
+                        <div className="bg-black rounded-xl overflow-hidden">
+                            <video 
+                                ref={videoRef} 
+                                className="w-full aspect-video" 
+                                controls 
+                                onTimeUpdate={(e) => {
+                                    const currentTime = (e.target as HTMLVideoElement).currentTime;
+                                    const t = Math.floor(currentTime);
+                                    axios.post('http://localhost:3002/sync', { currentTime: t }).catch(() => { });
+                                    checkForChallenge(currentTime);
+                                }}
+                            >
+                                <source 
+                                    src={filename === "1LearnPython.mp4" ? "/1LearnPython.mp4" : `http://localhost:3000/api/videos/${filename}`} 
+                                    type="video/mp4" 
+                                />
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        
+                        {/* Control Buttons */}
+                        <div className="flex gap-3">
+                            <button 
+                                className="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-800 transition-colors" 
+                                onClick={async()=>{
+                                    if (!tutorial) return;
+                                    const setup = tutorial.events.find((e:any)=>e.type==='project_setup')?.data || { working_directory: '~/learn_python_5', ide: 'vscode' };
+                                    await axios.post('http://localhost:3002/init-project', setup).catch(()=>{});
+                                    await axios.post('http://localhost:3002/events/load', { events: tutorial.events }).catch(()=>{});
+                                }}
+                            >
+                                Start Bridge
+                            </button>
+                            <button 
+                                className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors" 
+                                onClick={()=>{
+                                    if (videoRef.current) videoRef.current.currentTime = 0;
+                                    axios.post('http://localhost:3002/seek', { time: 0 }).catch(()=>{});
+                                    setTriggeredChallenges(new Set());
+                                    setCurrentChallenge(null);
+                                }}
+                            >
+                                Reset
+                            </button>
+                        </div>
+
+                        {/* Challenge Overlay */}
+                        {currentChallenge && (
+                            <div className="p-6 bg-gray-50 border border-gray-200 rounded-xl">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-xl font-semibold text-gray-900">Challenge</h3>
+                                    <button 
+                                        onClick={resumeVideo}
+                                        className="text-sm text-gray-600 hover:text-gray-900"
+                                    >
+                                        Skip
+                                    </button>
                                 </div>
                                 
-                                <div className="bg-white p-4 rounded border">
-                                    <h5 className="font-medium mb-2 capitalize">{selectedDifficulty} Challenge:</h5>
-                                    <p className="text-gray-700">
-                                        {currentChallenge.difficulty_levels?.[selectedDifficulty]}
+                                <div className="mb-4">
+                                    <h4 className="font-medium text-lg mb-2">{currentChallenge.title}</h4>
+                                    <p className="text-gray-600 mb-3">{currentChallenge.description}</p>
+                                    <p className="text-sm text-gray-500 mb-4">
+                                        <strong>Concept:</strong> {currentChallenge.concept_learned}
                                     </p>
                                 </div>
+
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium mb-2 text-gray-700">Difficulty:</label>
+                                    <div className="flex gap-2 mb-3">
+                                        {['easy', 'medium', 'hard'].map((level) => (
+                                            <button
+                                                key={level}
+                                                onClick={() => setSelectedDifficulty(level as any)}
+                                                className={`px-3 py-1 text-sm rounded-lg capitalize transition-colors ${
+                                                    selectedDifficulty === level 
+                                                    ? 'bg-gray-900 text-white' 
+                                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                }`}
+                                            >
+                                                {level}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    
+                                    <div className="bg-white p-4 rounded-lg border border-gray-200">
+                                        <p className="text-gray-700 text-sm">
+                                            {currentChallenge.difficulty_levels?.[selectedDifficulty]}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="mb-4">
+                                    <h5 className="font-medium mb-2 text-gray-700">Hints:</h5>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        {currentChallenge.hints?.map((hint: string, idx: number) => (
+                                            <li key={idx}>• {hint}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={testChallenge}
+                                        className="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-800 transition-colors"
+                                    >
+                                        Test Solution
+                                    </button>
+                                    <button
+                                        onClick={resumeVideo}
+                                        className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors"
+                                    >
+                                        Continue
+                                    </button>
+                                </div>
+
+                                <p className="text-xs text-gray-500 mt-3">
+                                    File: <code className="bg-gray-100 px-1 rounded text-xs">{currentChallenge.challenge_file}</code>
+                                </p>
                             </div>
+                        )}
+                    </div>
 
-                            <div className="mb-4">
-                                <h5 className="font-medium mb-2">💡 Hints:</h5>
-                                <ul className="text-sm text-gray-600 space-y-1">
-                                    {currentChallenge.hints?.map((hint: string, idx: number) => (
-                                        <li key={idx}>• {hint}</li>
-                                    ))}
-                                </ul>
-                            </div>
-
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={testChallenge}
-                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium"
-                                >
-                                    🧪 Test Solution
-                                </button>
-                                <button
-                                    onClick={resumeVideo}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium"
-                                >
-                                    ▶️ Continue Learning
-                                </button>
-                            </div>
-
-                            <p className="text-xs text-gray-500 mt-3">
-                                💾 Work on your solution in: <code className="bg-gray-100 px-1 rounded">{currentChallenge.challenge_file}</code>
-                            </p>
-                        </div>
-                    )}
-                </div>
-
-                {/* Chatbot Frame */}
-                <div className="w-1/4 bg-white rounded-md shadow-lg p-4 flex flex-col">
-                    <div className="flex-grow overflow-y-auto mb-4 space-y-4 h-0 pr-2">
-                        <p className="text-gray-600">Chatbot: Hello! How can I help you learn today?</p>
-                        {chatHistory.map((msg, index) => (
-                            <div key={index} className={msg.type === 'user' ? 'text-right' : 'text-left'}>
-                                <div className={`inline-block p-2 rounded-lg ${msg.type === 'user' ? 'bg-black text-white' : 'bg-gray-200 text-black'}`}>
-                                    {msg.type === 'user' ? msg.content : msg.content}
+                    {/* Chat Section */}
+                    <div className="col-span-4 flex flex-col border border-gray-200 rounded-xl overflow-hidden">
+                        {/* Chat Header */}
+                        <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center">
+                                    <img src="/CodeFlowLogo.svg" className="w-5 h-5 invert" />
+                                </div>
+                                <div>
+                                    <h3 className="font-medium text-gray-900">CodeFlow Assistant</h3>
+                                    <p className="text-xs text-gray-500">Ask questions about the video</p>
                                 </div>
                             </div>
-                        ))}
+                        </div>
 
-                    </div>
-                    <div className="flex">
-                        <input
-                            type="text"
-                            className="flex-grow p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Ask a question..."
-                            value={chatInput}
-                            onChange={(e) => setChatInput(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleChatSubmit();
-                                }
-                            }}
-                        />
-                        <button
-                            onClick={handleChatSubmit}
-                            className="bg-black text-white px-4 py-2 rounded-r-md hover:bg-black/80 cursor-pointer"
-                        >
-                            Send
-                        </button>
+                        {/* Chat Messages */}
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                            {/* Initial Message */}
+                            <div className="flex items-start space-x-3">
+                                <div className="w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <img src="/CodeFlowLogo.svg" className="w-3 h-3 invert" />
+                                </div>
+                                <div className="bg-gray-100 rounded-lg px-3 py-2 max-w-[85%]">
+                                    <p className="text-sm text-gray-700">Hello! How can I help you learn today?</p>
+                                </div>
+                            </div>
+
+                            {/* Chat History */}
+                            {chatHistory.map((msg, index) => (
+                                <div key={index} className={`flex items-start space-x-3 ${msg.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                                    {msg.type === 'bot' && (
+                                        <div className="w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <img src="/CodeFlowLogo.svg" className="w-3 h-3 invert" />
+                                        </div>
+                                    )}
+                                    {msg.type === 'user' && (
+                                        <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <span className="text-xs font-medium text-gray-700">
+                                                {user?.given_name?.charAt(0) || 'U'}
+                                            </span>
+                                        </div>
+                                    )}
+                                    <div className={`rounded-lg px-3 py-2 max-w-[85%] ${
+                                        msg.type === 'user' 
+                                        ? 'bg-gray-900 text-white' 
+                                        : 'bg-gray-100 text-gray-700'
+                                    }`}>
+                                        <div className="text-sm">
+                                            {typeof msg.content === 'string' ? msg.content : msg.content}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Chat Input */}
+                        <div className="p-4 border-t border-gray-200">
+                            <div className="flex space-x-2">
+                                <input
+                                    type="text"
+                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                                    placeholder="Ask a question..."
+                                    value={chatInput}
+                                    onChange={(e) => setChatInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            handleChatSubmit();
+                                        }
+                                    }}
+                                />
+                                <button
+                                    onClick={handleChatSubmit}
+                                    className="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-800 transition-colors"
+                                >
+                                    Send
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
