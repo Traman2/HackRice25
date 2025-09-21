@@ -12,6 +12,13 @@ export default function VideoWithAgent() {
     const [chatInput, setChatInput] = useState<string>('');
     const [chatHistory, setChatHistory] = useState<Array<{ type: 'user' | 'bot'; content: string | React.ReactNode }>>([]);
 
+    const seekToTime = (seconds: number) => {
+        if (videoRef.current) {
+            videoRef.current.currentTime = seconds;
+            videoRef.current.play();
+        }
+    };
+
     const handleChatSubmit = async () => {
         if (chatInput.trim() === '') return;
 
@@ -56,7 +63,7 @@ export default function VideoWithAgent() {
                             {dataPayload.highlightOutput.map((highlight: any, index: number) => (
                                 <Card key={index}>
                                     <CardHeader>
-                                        <CardTitle>Highlight: {highlight.highlight} (from {formatSecondsToMinutesAndSeconds(highlight.startSec)} to {formatSecondsToMinutesAndSeconds(highlight.endSec)})</CardTitle>
+                                        <CardTitle className="flex flex-wrap items-center text-lg leading-relaxed">Highlight: {highlight.highlight} from <span onClick={() => seekToTime(highlight.startSec)} className="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-md cursor-pointer hover:bg-blue-200 transition-colors duration-200 text-sm mr-1"> {formatSecondsToMinutesAndSeconds(highlight.startSec)}</span> to <span onClick={() => seekToTime(highlight.endSec)} className="ml-1 bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-md cursor-pointer hover:bg-blue-200 transition-colors duration-200 text-sm">{formatSecondsToMinutesAndSeconds(highlight.endSec)}</span></CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <p>{highlight.highlightSummary}</p>
