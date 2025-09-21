@@ -37,7 +37,7 @@ export default function LandingPage() {
                         </button>
                     </div>
 
-                    <div className="flex-2">
+                    <div className="flex-1">
 
                     </div>
 

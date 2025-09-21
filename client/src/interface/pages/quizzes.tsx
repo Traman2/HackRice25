@@ -262,13 +262,13 @@ export default function Quizzes() {
 
                 <div className="flex gap-12 mt-8">
                     {/* Quiz Form Tabs (User cannot change it) */}
-                    <div className="flex-1 flex flex-col gap-2 max-w-40">
-                        <div className="border-l-2"> 
+                    <div className="flex-1 flex flex-col gap-4 max-w-40">
+                        <div className="border-l-2 flex flex-col gap-1"> 
                             {formSections.map((section, index) => (
                             <p
                                 key={section.name}
                                 onClick={() => setFormProgress(index)}
-                                className={`ml-2 pl-4 self px-4 py-2 rounded-lg font-semibold font-body cursor-pointer transition-colors duration-200
+                                className={`ml-2 pl-4 self px-4 py-2  rounded-lg font-semibold font-body cursor-pointer transition-colors duration-200
                                                     ${index === formProgress ? 'bg-blue-100 text-blue-700 border-blue-300' : 'text-gray-600 hover:bg-gray-100'}
                                                     ${index < formProgress ? 'text-green-700 font-bold' : ''}
                                                     ${index > formProgress ? 'text-gray-400' : ''}
@@ -708,7 +708,7 @@ export default function Quizzes() {
                                         )}
 
                                         {formProgress === 6 && (
-                                            <div className="flex flex-col gap-5 py-6 rounded-lg bg-white animate-fade-in">
+                                            <div className="flex flex-col gap-5 px-0.5 py-6 rounded-lg bg-white animate-fade-in">
                                                 {formSections.slice(0, totalSections - 1).map((section) => (
                                                     <div key={section.name} className="mb-5 p-5 border border-gray-100 rounded-lg bg-gray-50 transition-all duration-200 hover:shadow-md">
                                                         <h3 className="text-xl font-semibold text-gray-700 mb-3 border-b border-gray-200 pb-2 font-heading">{section.name}</h3>
