@@ -216,7 +216,7 @@ export default function Quizzes() {
 
     return (
         <>
-            <div className="px-6 py-4">
+            <div className="px-32 py-4">
                 <nav className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
                         <img src="/CodeFlowLogo.svg" className="w-7" />
@@ -260,9 +260,9 @@ export default function Quizzes() {
                     </DropdownMenu>
                 </nav>
 
-                <div className="flex gap-12 mt-8">
+                <div className="flex gap-8 mt-8">
                     {/* Quiz Form Tabs (User cannot change it) */}
-                    <div className="flex-1 flex flex-col gap-4 max-w-40">
+                    <div className="flex-2 flex flex-col gap-4 max-w-40">
                         <div className="border-l-2 flex flex-col gap-1"> 
                             {formSections.map((section, index) => (
                             <p

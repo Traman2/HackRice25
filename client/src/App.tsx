@@ -1,17 +1,18 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./interface/landingpage";
 import Quizzes from "./interface/pages/quizzes";
-import SidebarSocket from "./interface/pages/tutorialInterface/sidebarSocket";
-
+import VideoWithAgent from "./interface/pages/videoWithAgentProblems";
+import CoursesPage from "./interface/pages/CoursesPage";
 
 function App() {
   return (
     <>
       <Router>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/quizzes" element={<Quizzes/>}/>
-          <Route path="/dashboard" element={<SidebarSocket pages="dashboard"/>}/>
+          <Route path="/" element={<LandingPage />} /> {/* First */}
+          <Route path="/quizzes" element={<Quizzes/>}/> {/* Second */}
+          <Route path="/video" element={<VideoWithAgent/>}/> {/* Fourth */}
+          <Route path="/dashboard" element={<CoursesPage/>}/> {/* Third */}
         </Routes>
       </Router>
     </>
