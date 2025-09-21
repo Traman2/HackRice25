@@ -9,7 +9,6 @@ import userQuizFormRoutes from './routes/userQuizFormRoutes.js';
 import tutorialRoutes from './routes/tutorialRoutes.js';
 import twelveLabsRoutes from './routes/twelveLabsRoutes.js';
 import videoCDNRoutes from './routes/videoCDNRoutes.js'
-import twelveLabsRoutes from './routes/twelveLabsRoutes.js';
 import { initializeVideoStream } from './controllers/videoStreamController.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
