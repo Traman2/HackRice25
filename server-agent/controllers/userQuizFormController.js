@@ -1,4 +1,6 @@
 import UserQuizForm from '../models/UserQuizForm.js';
+import classifyAndSave from "../services/userExperienceAnalyzer.ts";
+import GenerateDashboard from "../services/userUniqueDashboardCreation.ts";
 
 export const createUserQuizForm = async (req, res) => {
   try {
@@ -7,6 +9,11 @@ export const createUserQuizForm = async (req, res) => {
       uid, programmingExperienceLevel, programmingLanguages, programmingLanguagesOther, learningContextAndGoals, learningContextAndGoalsOther, primaryLearningGoal, learningStyleAssessment, stuckOnProblem, timeCommitment, preferredSessionLength, developmentEnvironmentExperience, installingSoftwareComfort, terminalComfort, managingFilesComfort, learningDifficulty, learningDifficultyOther, frustrationHandling
     });
     await newUserQuizForm.save();
+    
+    await classifyAndSave(uid);
+
+    await GenerateDashboard(uid);
+    
     res.status(201).json(newUserQuizForm);
   } catch (error) {
     res.status(400).json({ message: error.message });
