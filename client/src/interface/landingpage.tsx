@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState, useEffect } from "react";
 
@@ -52,6 +53,7 @@ const CodeAnimation = () => {
     }, [currentLineIndex, currentCharIndex, codeLines]);
 
     return (
+        
         <div className="relative w-[500px]">
             {/* VS Code-like window */}
             <div className="bg-[#1e1e1e] rounded-lg shadow-2xl overflow-hidden border border-gray-700 w-full">
@@ -91,7 +93,22 @@ export default function LandingPage() {
     return (
         <>
             {/* Simplified background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 z-0" />
+            {/* Main bg dots */}
+            <div className="fixed inset-0 z-0">
+                <div
+                    className={cn(
+                        "absolute inset-0",
+                        "[background-size:20px_20px]",
+                        "[background-image:radial-gradient(#b8b8b8_1px,transparent_1px)]"
+                    )}
+                />
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        background: 'radial-gradient(ellipse at center, transparent 15%, rgba(255,255,255,0.4) 40%, rgba(255,255,255,0.8) 70%, white 90%)'
+                    }}
+                />
+            </div>
             <div className="absolute inset-0 z-10">
                 <nav className="flex justify-between items-center mt-6 py-2 px-40">
                     <div className="flex items-center gap-2">
