@@ -1,4 +1,4 @@
-# 🏆 HackRice – CodeFlowAI (1st Place: Best Use of MongoDB)
+## 🏆 HackRice – CodeFlowAI (1st Place: Best Use of MongoDB)
 
 ## Inspiration  
 As students and developers, we often felt overwhelmed by the endless programming resources online. Generic tutorials rarely fit individual skill levels, leaving gaps in knowledge or reteaching concepts we already knew. We wanted a tool that adapts to *you* - your strengths, weaknesses, and goals.  
